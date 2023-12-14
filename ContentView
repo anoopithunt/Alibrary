@@ -1,6 +1,6 @@
 
 struct IndustryDepartmentView: View {
-     @StateObject var list = IndustryDepartmentCenterViewModel()
+     @StateObject var list = ViewModel()
     
     var body: some View {
         NavHeaderClosure(title: "Departments"){
