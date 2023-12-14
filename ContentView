@@ -1,0 +1,88 @@
+
+struct IndustryDepartmentView: View {
+     @StateObject var list = IndustryDepartmentCenterViewModel()
+    
+    var body: some View {
+        NavHeaderClosure(title: "Departments"){
+            ZStack{
+                Image("u").resizable()
+                VStack{
+                    VStack(alignment: .leading){
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("**Center Name**")
+                                Text("**Email**")
+                                Text("**Address**")
+                                
+                            }
+                            .font(.system(size: 24))
+                            .frame(width: 150)
+                            
+                            
+                            
+                            // Second Column
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(list.departments?.full_name ?? "").font(.system(size: 22))
+                                Text(list.departments?.email ?? "")
+                                    .font(.system(size: 22)).lineLimit(1)
+                                
+                                Text(list.departments?.address ?? "").font(.system(size: 22)).lineLimit(1)
+                            }
+                            .frame(width: 150) // Set a fixed width for the second column
+                            
+                            Spacer()
+                        }
+                         
+                    }.padding(6).background(Color.white)
+                    ScrollView{
+                        ForEach(list.datas ?? [], id: \.id){item in
+                            VStack(alignment:.leading){
+                                
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("**Center Name**")
+                                        Text("**Description**")
+                                        
+                                    }
+                                    .font(.system(size: 24))
+                                    .frame(width: 150)
+                                    
+                                    
+                                    
+                                    // Second Column
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("\(item.name)").font(.system(size: 22))
+                                        Text("\(item.description)").font(.system(size: 22)).lineLimit(1)
+                                    }
+                                    .frame(width: 150) // Set a fixed width for the second column
+                                    
+                                    Spacer()
+                                }
+                                 
+                                Divider()
+                                HStack{
+                                    Spacer()
+                                    Text("**View**")
+                                        .font(.system(size: 22))
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 6)
+                                        .background(Color("default_"))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(14)
+                                }.padding(.trailing)
+                            }.padding(6)
+                                .background(Color.white).cornerRadius(4)
+                                .shadow(radius:1)
+                        }
+                    }
+                }
+            }.onAppear {
+                list.getDepartmentData()
+            }
+        }.navigationViewStyle(StackNavigationViewStyle()).overlay(alignment: .topTrailing){
+            Image(systemName: "plus")
+                .foregroundColor(.white)
+                .font(.system(size: 22, weight: .heavy)).padding()
+        }
+    }
+}
