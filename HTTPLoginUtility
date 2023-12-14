@@ -1,0 +1,43 @@
+class HTTPLoginUtility {
+    func getLoginData<T: Decodable>(from url: URL, model: T.Type, token: String, completion: @escaping (Result<T, Error>) -> Void) {
+        var request = URLRequest(url: url)
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            // Check for network errors
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            // Check for non-HTTP response
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let nonHTTPResponseError = NSError(domain: NSURLErrorDomain, code: NSURLErrorBadServerResponse, userInfo: nil)
+                completion(.failure(nonHTTPResponseError))
+                return
+            }
+            
+            // Check for HTTP error status codes
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let httpError = NSError(domain: NSURLErrorDomain, code: httpResponse.statusCode, userInfo: nil)
+                completion(.failure(httpError))
+                return
+            }
+            
+            // Check if data is available
+            guard let data = data else {
+                let noDataError = NSError(domain: NSURLErrorDomain, code: NSURLErrorDataNotAllowed, userInfo: nil)
+                completion(.failure(noDataError))
+                return
+            }
+            
+            // Attempt to decode the data
+            do {
+                let decodedData = try JSONDecoder().decode(T.self, from: data)
+                completion(.success(decodedData))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+}
